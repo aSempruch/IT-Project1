@@ -9,7 +9,8 @@ def lookupHostname(query):
 
     hostname = query.strip()
 
-    if(dnsRecords.has_key(hostname)):
+    # Hostname is in DNS records
+    if hostname in dnsRecords:
         entry = dnsRecords[hostname]
         return hostname + " " + entry["ip"] + " " + entry["flag"]
 
@@ -41,7 +42,7 @@ def runService(connection):
     query = csockid.recv(100).decode('utf-8')
     xprint("Lookup from client:", query)
 
-    csockid.send(lookupHostname(query))
+    csockid.send(lookupHostname(query).encode('utf-8'))
 
 def loadFile():
     # Read file into data structure

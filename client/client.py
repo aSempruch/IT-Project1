@@ -7,9 +7,9 @@ def rs_connect():
 
     try:
         connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        print "Created client socket"
+        print("Created client socket")
     except socket.error as err:
-        print "Unable to create socket", err
+        print("Unable to create socket", err)
 
     connection.connect((sa_sameas_myaddr, RS_PORT))
 
@@ -22,6 +22,6 @@ def main():
 
     result = connection.recv(100).decode('utf-8')
 
-    print "Received response: ", result
+    print("Received response: ", result)
 
 main()
