@@ -1,4 +1,5 @@
 import socket
+import time
 
 RS_PORT = 60020
 
@@ -18,10 +19,13 @@ def rs_connect():
 def main():
     connection = rs_connect()
 
-    connection.send("google.com".encode("utf-8"))
+    connection.send("www.gosdfogle.com".encode("utf-8"))
 
-    result = connection.recv(100).decode('utf-8')
+    print(connection.recv(100).decode('utf-8'))
 
-    print("Received response: ", result)
+    connection.send('www.google.com'.encode('utf-8'))
+
+    print(connection.recv(100).decode('utf-8'))
+
 
 main()

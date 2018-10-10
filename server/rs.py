@@ -14,7 +14,8 @@ def lookupHostname(query):
         entry = dnsRecords[hostname]
         return hostname + " " + entry["ip"] + " " + entry["flag"]
 
-    return "TSHostname - NS"
+    # Hostname not found in DNS records
+    return dnsRecords['NS'] + ' - NS'
 
 def startServer():
     try:
@@ -46,7 +47,7 @@ def runService(connection):
 
 def loadFile():
     # Read file into data structure
-    with open("../PROJ1-DNSRS.txt", "r") as dnsFile:
+    with open("../PROJI-DNSRS.txt", "r") as dnsFile:
         global dnsRecords
         dnsRecords = loadFromFile(dnsFile)
         xprint("Loaded DNSRS file")
