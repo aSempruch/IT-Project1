@@ -21,10 +21,10 @@ def runServer():
     #listen for connection
     serverConnection.listen(1)
 
-    hostname = TS_Server_Socket.gethostname()
+    hostname = TS_ServerSocket.gethostname()
     ts_print("Hostname: ", hostname)
 
-    host_ip = (TS_Server_Socket.gethostbyname(hostname))
+    host_ip = (TS_ServerSocket.gethostbyname(hostname))
     ts_print("IP Address: ", host_ip)
 
     #wait for connection
@@ -47,8 +47,9 @@ def hostnameLookup(query):
 
 def loadFile():
     file = open("...PROJ-DNSTS.txt", r)
-    while file:
-	global dns_records = loadFromFile(file)
+
+	global dns_records
+    dns_records = loadFromFile(file)
 	ts_print("Finished loading file")
     
 
