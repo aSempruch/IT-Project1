@@ -3,6 +3,8 @@ from helpers.customPrint import rs_print as xprint
 from helpers.loadFromFile import loadFromFile
 
 PORT = 60020
+DNS_FILE = '../PROJI-DNSRS.txt'
+
 dnsRecords = {}
 
 def lookupHostname(query):
@@ -14,7 +16,7 @@ def lookupHostname(query):
         entry = dnsRecords[hostname]
         return hostname + " " + entry["ip"] + " " + entry["flag"]
 
-    # Hostname not found in DNS records
+    # Hostname not in DNS records
     return dnsRecords['NS'] + ' - NS'
 
 def startServer():
@@ -40,17 +42,23 @@ def runService(connection):
     csockid, addr = connection.accept()
     xprint("Got connection request from", str(addr))
 
-    query = csockid.recv(100).decode('utf-8')
-    xprint("Lookup from client:", query)
+    try:
+        while True:
+            query = csockid.recv(100).decode('utf-8')
+            if len(query) < 1:
+                continue
 
-    csockid.send(lookupHostname(query).encode('utf-8'))
+            xprint("Lookup from client:", query)
+            csockid.send(lookupHostname(query).encode('utf-8'))
+    except:
+        pass
 
 def loadFile():
     # Read file into data structure
-    with open("../PROJI-DNSRS.txt", "r") as dnsFile:
+    with open(DNS_FILE, "r") as dnsFile:
         global dnsRecords
         dnsRecords = loadFromFile(dnsFile)
-        xprint("Loaded DNSRS file")
+        xprint("Loaded " + DNS_FILE)
 
 def main():
 

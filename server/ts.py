@@ -1,66 +1,76 @@
-import socket as TS_ServerSocket
-from helpers.customPrint import ts_print
+import socket
+from helpers.customPrint import ts_print as xprint
 from helpers.loadFromFile import loadFromFile
-import sys
 
 PORT = 60030
-dns_records ={}
+DNS_FILE = '../PROJI-DNSTS.txt'
 
-def runServer():
-    try:
-        serverConnection = TS_ServerSocket.socket(TS_ServerSocket.AF_INET, TS_ServerSocket.SOCK_STREAM)
-	print("Server Socket created")
-    except TS_ServerSocket.error as err:
-	ts_print("Error connecting to TS_Server")
-	sys.exit()
+dnsRecords = {}
 
-    #bind socket to addr
-    server_binding = ('', PORT)
-    serverConnection.bind(server_binding)
+def lookupHostname(query):
 
-    #listen for connection
-    serverConnection.listen(1)
-
-    hostname = TS_ServerSocket.gethostname()
-    ts_print("Hostname: ", hostname)
-
-    host_ip = (TS_ServerSocket.gethostbyname(hostname))
-    ts_print("IP Address: ", host_ip)
-
-    #wait for connection
-    connected_socket, addr = TS_ServerSocket.accept()
-
-    query = TS_ServerSocket.recv(100).decode('utf-8')
-    ts_print("query may have been received")
-    connected_socket.send(hostnameLookup(query)).encode('utf-8')
-
-    serverConnection.close()
-    exit()
-
-def hostnameLookup(query):
     hostname = query.strip()
-    if hostname in dns_records:
-	entry = dns_records[hostname]
-	return hostname + " " + entry["ip"] + " " + entry["flag"]
 
-    return hostname + "-  " + "Error: HOST NOT FOUND"  
+    # Hostname is in DNS records
+    if hostname in dnsRecords:
+        entry = dnsRecords[hostname]
+        #xprint("Looking up " + hostname + " result: " + entry)
+        return hostname + " " + entry["ip"] + " " + entry["flag"]
+
+    # Hostname not in DNS records
+    return dnsRecords['NS'] + ' - NS'
+
+def startServer():
+    try:
+        connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        xprint("Socket Created")
+    except socket.error as err:
+        xprint("Error Opening Socket", err)
+        exit(10)
+
+    connection.bind(('', PORT))
+    connection.listen(1)
+
+    host = socket.gethostname()
+    xprint("Hostname:", host)
+
+    localhost_ip = (socket.gethostbyname(host))
+    xprint("IP:", localhost_ip)
+
+    return connection
+
+def runService(connection):
+    csockid, addr = connection.accept()
+    xprint("Got connection request from", str(addr))
+
+    try:
+        while True:
+            query = csockid.recv(100).decode('utf-8')
+            if len(query) < 1:
+                continue
+
+            xprint("Lookup from client:", query)
+            csockid.send(lookupHostname(query).encode('utf-8'))
+    except:
+        pass
 
 def loadFile():
-    file = open("...PROJ-DNSTS.txt", r)
-
-	global dns_records
-    dns_records = loadFromFile(file)
-	ts_print("Finished loading file")
-    
-
+    # Read file into data structure
+    with open(DNS_FILE, "r") as dnsFile:
+        global dnsRecords
+        dnsRecords = loadFromFile(dnsFile)
+        xprint("Loaded " + DNS_FILE)
 
 def main():
 
     loadFile()
+
+    connection = startServer()
+
+    # Accept multiple connections
     while True:
-         runServer()
+        runService(connection)
 
-    #runServer.close()
-    sys.exit()
+    connection.close()
 
-main()	
+main()
