@@ -51,6 +51,7 @@ def runService(connection):
             xprint("Lookup from client:", query)
             csockid.send(lookupHostname(query).encode('utf-8'))
     except:
+        xprint("No more data, closing connection")
         pass
 
 def loadFile():

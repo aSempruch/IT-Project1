@@ -13,12 +13,12 @@ def lookupHostname(query):
 
     # Hostname is in DNS records
     if hostname in dnsRecords:
+        xprint("Looking up", hostname)
         entry = dnsRecords[hostname]
-        #xprint("Looking up " + hostname + " result: " + entry)
         return hostname + " " + entry["ip"] + " " + entry["flag"]
 
     # Hostname not in DNS records
-    return dnsRecords['NS'] + ' - NS'
+    return 'Hostname - Error:HOST NOT FOUND'
 
 def startServer():
     try:
@@ -50,8 +50,11 @@ def runService(connection):
                 continue
 
             xprint("Lookup from client:", query)
-            csockid.send(lookupHostname(query).encode('utf-8'))
+            response = lookupHostname(query)
+            xprint("Sending to client: " + response)
+            csockid.send(response.encode('utf-8'))
     except:
+        xprint("No more data, closing connection")
         pass
 
 def loadFile():
