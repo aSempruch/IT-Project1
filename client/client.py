@@ -51,7 +51,7 @@ def main():
                     ts_connection = ts_connect(response)
                 response = lookup(line, ts_connection)
                 print("TS Lookup for " + line + ": " + response)
-            resolvedFile.write(response + '\n')
+            resolvedFile.write(line + ' : ' + response + '\n')
 
     rs_connection.close()
     if ts_connection != None:
