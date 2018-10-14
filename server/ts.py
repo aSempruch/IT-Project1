@@ -18,7 +18,7 @@ def lookupHostname(query):
         return hostname + " " + entry["ip"] + " " + entry["flag"]
 
     # Hostname not in DNS records
-    return 'Hostname - Error:HOST NOT FOUND'
+    return hostname + ' - Error:HOST NOT FOUND'
 
 def startServer():
     try:
